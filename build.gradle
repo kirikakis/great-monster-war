@@ -1,0 +1,70 @@
+group 'com.github.kirikakis.monster.war'
+
+apply plugin:'java'
+apply plugin:'base'
+apply plugin:'application'
+apply plugin:'groovy'
+apply plugin:'idea'
+
+def versions = [
+        jdk:            '1.8',
+        groovy:         '2.4.10',
+        spock:          '1.1-groovy-2.4',
+        commonsCsv:     '1.5',
+        mockito:        '1.9.5'
+
+]
+
+sourceCompatibility = versions.jdk
+
+mainClassName = 'com.github.kirikakis.monster.war.Main'
+applicationName = 'great-monster-war'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.commons:commons-csv:' + versions.commonsCsv
+
+    testCompile 'org.mockito:mockito-all:' + versions.mockito
+    testCompile 'org.codehaus.groovy:groovy-all:' + versions.groovy
+    testCompile 'org.spockframework:spock-core:' + versions.spock
+}
+
+run {
+    if (project.hasProperty("appArgs")) {
+        args findProperty('appArgs').split(' ')
+    }
+}
+
+tasks.withType(JavaExec) {
+    // Assign all Java system properties from
+    // the command line to the JavaExec task.
+    systemProperties System.properties
+}
+
+startScripts {
+    // Add config, libs folders to classpath. Using workaround at
+    // https://discuss.gradle.org/t/classpath-in-application-plugin-is-building-always-relative-to-app-hoe-lib-directory/2012
+    classpath += files('config')
+    doLast {
+        def windowsScriptFile = file getWindowsScript()
+        def unixScriptFile = file getUnixScript()
+        windowsScriptFile.text = windowsScriptFile.text.replace('%APP_HOME%\\lib\\config', '%APP_HOME%\\config')
+        unixScriptFile.text = unixScriptFile.text.replace('$APP_HOME/lib/config', '$APP_HOME/config')
+    }
+}
+
+distZip {
+    into(project.name + '/config') {
+        from 'src/main/resources'
+    }
+}
+
+distTar {
+    into(project.name + '/config') {
+        from 'src/main/resources'
+    }
+}
