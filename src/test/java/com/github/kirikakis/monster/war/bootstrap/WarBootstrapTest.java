@@ -1,27 +1,36 @@
 package com.github.kirikakis.monster.war.bootstrap;
 
+import com.github.kirikakis.monster.war.exceptions.MonsterAlreadyInCityException;
+import com.github.kirikakis.monster.war.exceptions.MonstersMoreThanCitiesException;
 import com.github.kirikakis.monster.war.model.City;
+import com.github.kirikakis.monster.war.model.Monster;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
-public class BootstrapUtilitiesTest {
-    @Before
-    public void setUp() throws Exception {
+public class WarBootstrapTest {
+
+    private static Map<String, City> returnedCities;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        returnedCities =
+                WarBootstrap.FetchMapDataFromFile("src/main/resources/map.txt");
     }
 
     @Test
     public void fetchMapDataFromFile() throws Exception {
-        Map<String, City> returnedCities =
-                new BootstrapUtilities().FetchMapDataFromFile("src/main/resources/map.txt");
 
+        assertEquals(6763, returnedCities.size());
 
-        assertEquals(6764, returnedCities.size());
+        assertFalse(returnedCities.containsKey(""));
 
         assertThat(returnedCities.get("Mosnino").getName(), is("Mosnino"));
         assertThat(returnedCities.get("Mosnino").getEasternCity().getName(), is("Minimixixe"));
@@ -52,6 +61,45 @@ public class BootstrapUtilitiesTest {
         assertThat(returnedCities.get("Menisnile").getNorthernCity().getName(), is("Molusnu"));
         assertThat(returnedCities.get("Menisnile").getSouthernCity().getName(), is("Egolma"));
         assertThat(returnedCities.get("Menisnile").getWesternCity().getName(), is("Exexalinu"));
+    }
+
+    @Test
+    public void initializeMonstersAndChooseThemCity() throws IOException, MonstersMoreThanCitiesException,
+            MonsterAlreadyInCityException {
+        List<Monster> monsterList =
+                WarBootstrap.initializeMonstersAndChooseThemCity(returnedCities, 6763);
+
+        assertEquals(6763, monsterList.size());
+
+        monsterList.forEach(monster -> {
+            boolean isMonsterCityFromCitiesMap = false;
+            for(City city: returnedCities.values()) {
+                if(monster.getCurrentCity().equals(city)) {
+                    //returnedCities has to have unique values
+                    assertFalse(isMonsterCityFromCitiesMap);
+                    isMonsterCityFromCitiesMap = true;
+                }
+            }
+            //Any of the returnedCities assigned to monster
+            assertTrue(isMonsterCityFromCitiesMap);
+        });
+
+        returnedCities.values().forEach(city -> {
+            boolean isCityBelongsToMoreThanOneMonster = false;
+            for(Monster monster : monsterList) {
+                if(city.equals(monster.getCurrentCity())) {
+                    //The monster can't be in more than one city
+                    assertFalse(isCityBelongsToMoreThanOneMonster);
+                    isCityBelongsToMoreThanOneMonster = true;
+                }
+            }
+        });
+    }
+
+    @Test(expected = MonstersMoreThanCitiesException.class)
+    public void initializeMonstersAndChooseThemCityThrowsMonstersMoreThanCitiesException()
+            throws IOException, MonstersMoreThanCitiesException, MonsterAlreadyInCityException {
+        WarBootstrap.initializeMonstersAndChooseThemCity(returnedCities, 6764);
     }
 
 }
