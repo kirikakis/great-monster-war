@@ -1,4 +1,4 @@
-<img src="http://desktopgraphy.com/wp-content/uploads/2016/10/fantasy-giant-monster-free-wallpapers-1920x1080.jpg" width=300/>
+<img src="http://desktopgraphy.com/wp-content/uploads/2016/10/fantasy-giant-monster-free-wallpapers.jpg" width=300/>
 
 # great-monster-wars
 
