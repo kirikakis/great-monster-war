@@ -1,4 +1,4 @@
-<img src="https://i.annihil.us/u/prod/misc/marvel.svg" width=200/>
+<img src="http://desktopgraphy.com/wp-content/uploads/2016/10/fantasy-giant-monster-free-wallpapers-1920x1080.jpg" width=300/>
 
 # great-monster-wars
 
@@ -14,6 +14,7 @@
 * [Acknowledgments](#acknowledgments)
 
 ## Overview
+A war is about to start among huge monsters that is going to devastate a whole world.
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
