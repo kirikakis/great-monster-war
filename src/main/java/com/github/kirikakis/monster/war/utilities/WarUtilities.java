@@ -1,9 +1,10 @@
-package com.github.kirikakis.monster.war.bootstrap;
+package com.github.kirikakis.monster.war.utilities;
 
-import com.github.kirikakis.monster.war.exceptions.MonsterAlreadyInCityException;
 import com.github.kirikakis.monster.war.exceptions.MonstersMoreThanCitiesException;
 import com.github.kirikakis.monster.war.model.City;
+import com.github.kirikakis.monster.war.model.Direction;
 import com.github.kirikakis.monster.war.model.Monster;
+import com.github.kirikakis.monster.war.model.NeighborCity;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +18,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class WarBootstrap {
+public class WarUtilities {
 
     public static Map<String, City> FetchMapDataFromFile(String fileName) throws IOException {
         Map<String, City> cityMap = new HashMap<>();
@@ -80,17 +81,25 @@ public class WarBootstrap {
                 cityMap.putIfAbsent(westernCityName, westernCity);
             }
 
-            currentCity.setNorthernCity(northernCity);
-            currentCity.setEasternCity(easternCity);
-            currentCity.setSouthernCity(southernCity);
-            currentCity.setWesternCity(westernCity);
+            if(!northernCityName.equals("")) {
+                currentCity.getNeighborCities().add(new NeighborCity(Direction.NORTH, northernCity));
+            }
+            if(!easternCityName.equals("")) {
+                currentCity.getNeighborCities().add(new NeighborCity(Direction.EAST, easternCity));
+            }
+            if(!southernCityName.equals("")) {
+                currentCity.getNeighborCities().add(new NeighborCity(Direction.SOUTH, southernCity));
+            }
+            if(!westernCityName.equals("")) {
+                currentCity.getNeighborCities().add(new NeighborCity(Direction.WEST, westernCity));
+            }
         });
         return cityMap;
     }
 
-    public static List<Monster> initializeMonstersAndChooseThemCity(
+    public static List<Monster> InitializeMonstersAndChooseThemCity(
             Map<String, City> citiesMap, int monstersToInitialize)
-            throws MonstersMoreThanCitiesException, MonsterAlreadyInCityException {
+            throws MonstersMoreThanCitiesException {
         if (citiesMap.size() < monstersToInitialize) {
             throw new MonstersMoreThanCitiesException();
         }
@@ -109,5 +118,20 @@ public class WarBootstrap {
             monsters.add(monster);
         }
         return monsters;
+    }
+
+    public static void printCitiesMapData(Map<String, City> citiesMap) {
+        citiesMap.forEach((cityName, city) -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append(cityName);
+            sb.append(' ');
+            city.getNeighborCities().forEach(neighborCity -> {
+                sb.append(neighborCity.getDirection());
+                sb.append('=');
+                sb.append(neighborCity.getCity().getName());
+                sb.append(' ');
+            });
+            System.out.println(sb.toString());
+        });
     }
 }

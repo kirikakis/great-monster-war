@@ -34,8 +34,8 @@ dependencies {
 }
 
 run {
-    if (project.hasProperty("appArgs")) {
-        args findProperty('appArgs').split(' ')
+    if (project.hasProperty("monsters")) {
+        args findProperty('monsters').split(' ')
     }
 }
 

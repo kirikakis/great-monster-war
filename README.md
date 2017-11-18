@@ -28,12 +28,12 @@ from your console and execute the following command.
 
 #### Unix
 ```
-./gradlew test run -PappArgs="100"
+./gradlew test run -Pmonsters="100"
 ```
 
 #### Windows
 ```
-gradlew test run -PappArgs="100"
+gradlew test run -Pmonsters="100"
 ```
 
 ## Deployment
@@ -49,12 +49,12 @@ Then copy **build/distributions/great-monsters-war.zip** and unzip in a folder o
 
 #### Unix
 ```
-./bin/great-monsters-war
+./bin/great-monsters-war 1000
 ```
 
 #### Windows
 ```
-bin/great-monsters-war
+bin/great-monsters-war 1000
 ```
 
 ### Prerequisites on a Live Environment
