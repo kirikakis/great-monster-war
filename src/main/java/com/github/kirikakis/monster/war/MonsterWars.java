@@ -33,12 +33,12 @@ class MonsterWars {
             if(monsters.size() == 0) {
                 throw new NoMonstersLeftException();
             }
+            removeAllMonstersFromCitiesEnRouteToTheNextOne();
             moveAllMonstersToNextCityRandomlyAndFight();
         }
     }
 
     void moveAllMonstersToNextCityRandomlyAndFight() {
-        removeAllMonstersFromCitiesEnRouteToTheNextOne();
         List<Monster> diedMonsters = new ArrayList<>();
         for(Monster monster : monsters) {
             try {

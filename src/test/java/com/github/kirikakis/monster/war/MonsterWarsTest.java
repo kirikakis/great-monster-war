@@ -127,10 +127,6 @@ public class MonsterWarsTest {
 
         monsterWars.moveAllMonstersToNextCityRandomlyAndFight();
 
-        //removeAllMonstersFromCitiesEnRouteToTheNextOne()
-        verify(firstCity, times(1)).setMonster(isNull(Monster.class));
-        verify(secondCity, times(1)).setMonster(isNull(Monster.class));
-
         verify(firstMonster, times(1)).setCurrentCity(secondCity);
         verify(secondMonster, times(1)).setCurrentCity(firstCity);
 
@@ -163,10 +159,6 @@ public class MonsterWarsTest {
         MonsterWars monsterWars = new MonsterWars(citiesMap, monsters);
 
         monsterWars.moveAllMonstersToNextCityRandomlyAndFight();
-
-        //removeAllMonstersFromCitiesEnRouteToTheNextOne()
-        verify(firstCity, times(1)).setMonster(isNull(Monster.class));
-        verify(secondCity, times(1)).setMonster(isNull(Monster.class));
 
         assertEquals(0, monsters.size());
         assertEquals(0, citiesMap.size());
