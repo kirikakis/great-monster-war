@@ -14,7 +14,9 @@
 * [License](#build-with)
 
 ## Overview
-A war is about to start among huge monsters that is going to devastate a whole world.
+A war is about to start among huge monsters and is going to devastate a whole world. Giant monsters start out at random places on the map, and wander around randomly.
+Every day the monsters travel in any of the directions leading out of a city. When two monsters end up in the same place, they fight, and in the process kill each other and destroy the city.
+The war will go on until all the monsters have been destroyed, or each monster has moved at least 10,000 times.
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
