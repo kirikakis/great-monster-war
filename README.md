@@ -1,6 +1,6 @@
 <img src="fantasy-giant-monster.jpg" width=300/>
 
-# great-monster-wars
+# great-monster-war
 
 ### Table of Contents
 
