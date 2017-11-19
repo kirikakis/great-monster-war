@@ -3,16 +3,12 @@ group 'com.github.kirikakis.monster.war'
 apply plugin:'java'
 apply plugin:'base'
 apply plugin:'application'
-apply plugin:'groovy'
 apply plugin:'idea'
 
 def versions = [
         jdk:            '1.8',
-        groovy:         '2.4.10',
-        spock:          '1.1-groovy-2.4',
-        commonsCsv:     '1.5',
+        junit:          '4.12',
         mockito:        '1.9.5'
-
 ]
 
 sourceCompatibility = versions.jdk
@@ -26,11 +22,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.apache.commons:commons-csv:' + versions.commonsCsv
-
     testCompile 'org.mockito:mockito-all:' + versions.mockito
-    testCompile 'org.codehaus.groovy:groovy-all:' + versions.groovy
-    testCompile 'org.spockframework:spock-core:' + versions.spock
+    testCompile 'junit:junit:' + versions.junit
 }
 
 run {

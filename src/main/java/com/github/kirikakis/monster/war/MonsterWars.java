@@ -6,7 +6,6 @@ import com.github.kirikakis.monster.war.model.City;
 import com.github.kirikakis.monster.war.model.Monster;
 import com.github.kirikakis.monster.war.model.NeighborCity;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;

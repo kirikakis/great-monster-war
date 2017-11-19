@@ -7,7 +7,6 @@ import com.github.kirikakis.monster.war.model.Monster;
 import com.github.kirikakis.monster.war.utilities.WarUtilities;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
