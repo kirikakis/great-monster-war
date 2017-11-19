@@ -6,6 +6,7 @@ import com.github.kirikakis.monster.war.exceptions.NoMonstersLeftException;
 import com.github.kirikakis.monster.war.model.City;
 import com.github.kirikakis.monster.war.model.Monster;
 import com.github.kirikakis.monster.war.model.NeighborCity;
+import com.github.kirikakis.monster.war.utilities.WarUtilities;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,11 +14,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
@@ -26,7 +30,7 @@ import static org.junit.Assert.*;
 public class MonsterWarsTest {
 
     private Map<String, City> citiesMap;
-    private List<Monster> monsters;
+    private Set<Monster> monsters;
     private List<NeighborCity> neighborCities;
 
     @Mock
@@ -57,7 +61,7 @@ public class MonsterWarsTest {
         neighborCities.add(neighborCity1);
         neighborCities.add(neighborCity2);
 
-        monsters = new ArrayList<>();
+        monsters = new HashSet<>();
         monsters.add(firstMonster);
         monsters.add(secondMonster);
     }
@@ -65,7 +69,7 @@ public class MonsterWarsTest {
     @Test
     public void initializeFields() {
         HashMap<String, City> givenCityMap = new HashMap<>();
-        List<Monster> givenMonsters = new ArrayList<>();
+        Set<Monster> givenMonsters = new HashSet<>();
         MonsterWars monsterWars = new MonsterWars(givenCityMap, givenMonsters);
 
         assertEquals(givenCityMap, monsterWars.getCitiesMap());
@@ -91,7 +95,7 @@ public class MonsterWarsTest {
         when(secondCity.getMonster()).thenReturn(null);
         when(neighborCity1.getCity()).thenReturn(secondCity);
 
-        MonsterWars monsterWars = new MonsterWars(citiesMap, Collections.singletonList(firstMonster));
+        MonsterWars monsterWars = new MonsterWars(citiesMap, Collections.singleton(firstMonster));
 
         monsterWars.moveMonsterToNextCityRandomly(firstMonster);
 
@@ -106,7 +110,7 @@ public class MonsterWarsTest {
         when(secondCity.getMonster()).thenReturn(firstMonster);
         when(neighborCity1.getCity()).thenReturn(secondCity);
 
-        MonsterWars monsterWars = new MonsterWars(citiesMap, Collections.singletonList(firstMonster));
+        MonsterWars monsterWars = new MonsterWars(citiesMap, Collections.singleton(firstMonster));
 
         monsterWars.moveMonsterToNextCityRandomly(firstMonster);
     }
@@ -154,14 +158,12 @@ public class MonsterWarsTest {
         when(firstMonster.getName()).thenReturn("firstMonster");
         when(firstCity.getName()).thenReturn("firstCity");
 
-
-
         MonsterWars monsterWars = new MonsterWars(citiesMap, monsters);
 
         monsterWars.moveAllMonstersToNextCityRandomlyAndFight();
 
         assertEquals(0, monsters.size());
-        assertEquals(0, citiesMap.size());
+        assertEquals(1, citiesMap.size());
     }
 
     @Test
@@ -193,7 +195,24 @@ public class MonsterWarsTest {
 
     @Test(expected = NoMonstersLeftException.class)
     public void startTheWarThrowsNoMonstersLeftException() throws NoMonstersLeftException {
-        MonsterWars monsterWars = new MonsterWars(citiesMap, Collections.emptyList());
+        MonsterWars monsterWars = new MonsterWars(citiesMap, Collections.emptySet());
         monsterWars.startTheWar(10);
+    }
+
+    @Test
+    public void realWarTest() throws IOException, MonstersMoreThanCitiesException, NoMonstersLeftException {
+        Map<String, City> returnedCities =
+                WarUtilities.FetchMapDataFromFile("src/main/resources/map.txt");
+        Set<Monster> monsterSet =
+                WarUtilities.InitializeMonstersAndChooseThemCity(returnedCities, 400);
+
+        MonsterWars monsterWars = new MonsterWars(returnedCities, monsterSet);
+        monsterWars.startTheWar(10000);
+
+        //6763 records in src/main/resources/map.txt
+        Integer destroyedCities = 6763 - monsterWars.getCitiesMap().size();
+
+        //For every destroyed city 2 monsters should have been killed + remaining
+        assertEquals(400, (destroyedCities * 2) + monsterWars.getMonsters().size());
     }
 }

@@ -9,6 +9,7 @@ import com.github.kirikakis.monster.war.utilities.WarUtilities;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Main {
 
@@ -16,7 +17,7 @@ public class Main {
         Map<String, City> returnedCities;
         try {
             returnedCities =
-            WarUtilities.FetchMapDataFromFile("src/main/resources/map.txt");
+                WarUtilities.FetchMapDataFromFile("src/main/resources/map.txt");
         }
         catch (IOException e) {
             returnedCities =
@@ -25,7 +26,7 @@ public class Main {
         Integer citiesCountBeforeTheWar = returnedCities.size();
         Integer monstersStartedTheWar = 0;
         try {
-            List<Monster> monsterList =
+            Set<Monster> monsterList =
                     WarUtilities.InitializeMonstersAndChooseThemCity(returnedCities, Integer.parseInt(args[0]));
             monstersStartedTheWar = monsterList.size();
             MonsterWars monsterWars = new MonsterWars(returnedCities, monsterList);

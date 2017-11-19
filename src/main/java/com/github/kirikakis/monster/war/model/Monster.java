@@ -20,9 +20,4 @@ public class Monster implements Cloneable {
     public void setCurrentCity(City currentCity) {
         this.currentCity = currentCity;
     }
-
-    @Override
-    public Monster clone() {
-        return new Monster(name, currentCity);
-    }
 }

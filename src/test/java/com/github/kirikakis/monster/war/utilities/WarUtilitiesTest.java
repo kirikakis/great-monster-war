@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -68,7 +69,7 @@ public class WarUtilitiesTest {
 
     @Test
     public void initializeMonstersAndChooseThemCity() throws IOException, MonstersMoreThanCitiesException {
-        List<Monster> monsterList =
+        Set<Monster> monsterList =
                 WarUtilities.InitializeMonstersAndChooseThemCity(returnedCities, 6763);
 
         assertEquals(6763, monsterList.size());

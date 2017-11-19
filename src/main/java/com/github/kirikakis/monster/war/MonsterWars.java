@@ -6,16 +6,18 @@ import com.github.kirikakis.monster.war.model.City;
 import com.github.kirikakis.monster.war.model.Monster;
 import com.github.kirikakis.monster.war.model.NeighborCity;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 class MonsterWars {
     private Map<String, City> citiesMap;
-    private List<Monster> monsters;
+    private Set<Monster> monsters;
 
-    MonsterWars(Map<String, City> citiesMap, List<Monster> monsters) {
+    MonsterWars(Map<String, City> citiesMap, Set<Monster> monsters) {
         this.citiesMap = citiesMap;
         this.monsters = monsters;
     }
@@ -24,7 +26,7 @@ class MonsterWars {
         return citiesMap;
     }
 
-    List<Monster> getMonsters() {
+    Set<Monster> getMonsters() {
         return monsters;
     }
 
@@ -39,29 +41,18 @@ class MonsterWars {
     }
 
     void moveAllMonstersToNextCityRandomlyAndFight() {
-        List<Monster> diedMonsters = new ArrayList<>();
+        Set<Monster> diedMonsters = new HashSet<>();
+
         for(Monster monster : monsters) {
-            try {
-                moveMonsterToNextCityRandomly(monster);
-            } catch (MonsterAlreadyInCityException e) {
-                String cityNameToRemove = e.getCity().getName();
-                System.out.println(
-                        cityNameToRemove + " has been destroyed by monster " +
-                    monster.getName() + " and monster " +
-                    e.getCity().getMonster().getName() + "!");
-                diedMonsters.add(monster);
-                citiesMap.remove(cityNameToRemove);
-                e.getCity().getNeighborCities().forEach(
-                        neighborCity -> neighborCity.getCity().removeConnection(e.getCity()));
+            if(!diedMonsters.contains(monster)) {
+                try {
+                    moveMonsterToNextCityRandomly(monster);
+                } catch (MonsterAlreadyInCityException e) {
+                    diedMonsters.addAll(monsterFight(monster, e.getCity()));
+                }
             }
         }
-        diedMonsters.forEach(monster -> monsters.remove(monster));
-    }
-
-    void removeAllMonstersFromCitiesEnRouteToTheNextOne() {
-        for(City city : citiesMap.values()) {
-            city.setMonster(null);
-        }
+        monsters.removeAll(diedMonsters);
     }
 
     void moveMonsterToNextCityRandomly(Monster monster) throws MonsterAlreadyInCityException {
@@ -75,5 +66,25 @@ class MonsterWars {
             nextMonsterCity.setMonster(monster);
             monster.setCurrentCity(nextMonsterCity);
         }
+    }
+
+    void removeAllMonstersFromCitiesEnRouteToTheNextOne() {
+        citiesMap.forEach((cityName, city) -> city.setMonster(null));
+    }
+
+    Set<Monster> monsterFight(Monster monster, City cityToDestroy) {
+        Set<Monster> diedMonsters = new HashSet<>();
+        String cityNameToRemove = cityToDestroy.getName();
+        Monster otherCityMonster = cityToDestroy.getMonster();
+        System.out.println(
+                cityNameToRemove + " has been destroyed by monster " +
+                        monster.getName() + " and monster " +
+                        otherCityMonster.getName() + "!");
+        diedMonsters.add(monster);
+        diedMonsters.add(otherCityMonster);
+        citiesMap.remove(cityNameToRemove);
+        cityToDestroy.getNeighborCities().forEach(
+                neighborCity -> neighborCity.getCity().removeConnection(cityToDestroy));
+        return diedMonsters;
     }
 }

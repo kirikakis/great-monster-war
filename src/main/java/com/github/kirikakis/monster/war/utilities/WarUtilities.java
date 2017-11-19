@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -97,13 +98,13 @@ public class WarUtilities {
         return cityMap;
     }
 
-    public static List<Monster> InitializeMonstersAndChooseThemCity(
+    public static Set<Monster> InitializeMonstersAndChooseThemCity(
             Map<String, City> citiesMap, int monstersToInitialize)
             throws MonstersMoreThanCitiesException {
         if (citiesMap.size() < monstersToInitialize) {
             throw new MonstersMoreThanCitiesException();
         }
-        List<Monster> monsters = new ArrayList<>();
+        Set<Monster> monsters = new HashSet<>();
         Random random = new Random();
         Set<Integer> allocatedCitiesIndex = new HashSet<>();
         Integer citiesRandomIndex = random.nextInt(citiesMap.size());
