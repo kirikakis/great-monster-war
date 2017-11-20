@@ -1,7 +1,6 @@
 package com.github.kirikakis.monster.war;
 
 import com.github.kirikakis.monster.war.exceptions.MonstersMoreThanCitiesException;
-import com.github.kirikakis.monster.war.exceptions.NoMonstersLeftException;
 import com.github.kirikakis.monster.war.model.City;
 import com.github.kirikakis.monster.war.model.Monster;
 import com.github.kirikakis.monster.war.utilities.WarUtilities;
@@ -32,12 +31,7 @@ public class Main {
             System.out.println("War started total cities = " + citiesCountBeforeTheWar +
                     " total monsters = " + monstersStartedTheWar);
             System.out.println("----------------------------------------------");
-            try {
-                monsterWars.startTheWar(10000);
-                returnedCities = monsterWars.getCitiesMap();
-            } catch (NoMonstersLeftException e) {
-                e.printStackTrace();
-            }
+            monsterWars.startTheWar(10000);
             System.out.println("----------------------------------------------");
             System.out.println("Map after the Great Monster War");
             System.out.println("----------------------------------------------");

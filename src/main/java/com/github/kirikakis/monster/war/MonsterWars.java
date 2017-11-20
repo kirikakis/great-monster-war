@@ -1,7 +1,5 @@
 package com.github.kirikakis.monster.war;
 
-import com.github.kirikakis.monster.war.exceptions.MonsterAlreadyInCityException;
-import com.github.kirikakis.monster.war.exceptions.NoMonstersLeftException;
 import com.github.kirikakis.monster.war.model.City;
 import com.github.kirikakis.monster.war.model.Monster;
 import com.github.kirikakis.monster.war.model.NeighborCity;
@@ -29,11 +27,8 @@ class MonsterWars {
         return monsters;
     }
 
-    void startTheWar(Integer moves) throws NoMonstersLeftException {
+    void startTheWar(Integer moves) {
         for (int i = 0; i < moves; i++) {
-            if(monsters.size() == 0) {
-                throw new NoMonstersLeftException();
-            }
             removeAllMonstersFromCitiesEnRouteToTheNextOne();
             moveAllMonstersToNextCityRandomlyAndFight();
         }
@@ -44,27 +39,29 @@ class MonsterWars {
 
         for(Monster monster : monsters) {
             if(!diedMonsters.contains(monster)) {
-                try {
-                    moveMonsterToNextCityRandomly(monster);
-                } catch (MonsterAlreadyInCityException e) {
-                    diedMonsters.addAll(monsterFight(monster, e.getCity()));
+                City nextMonsterCity =  chooseNextRandomCity(monster);
+                if(nextMonsterCity != null) {
+                    if (nextMonsterCity.getMonster() != null) {
+                        //There is already a monster in city so lets fight!!!
+                        diedMonsters.addAll(monsterFight(monster, nextMonsterCity));
+                    }
+                    else {
+                        nextMonsterCity.setMonster(monster);
+                        monster.setCurrentCity(nextMonsterCity);
+                    }
                 }
             }
         }
         monsters.removeAll(diedMonsters);
     }
 
-    void moveMonsterToNextCityRandomly(Monster monster) throws MonsterAlreadyInCityException {
+    City chooseNextRandomCity(Monster monster) {
         List<NeighborCity> neighborCities = monster.getCurrentCity().getNeighborCities();
         if(neighborCities.size() > 0) {
             Integer neighborCitiesRandomIndex = new Random().nextInt(neighborCities.size());
-            City nextMonsterCity = neighborCities.get(neighborCitiesRandomIndex).getCity();
-            if (nextMonsterCity.getMonster() != null) {
-                throw new MonsterAlreadyInCityException(nextMonsterCity);
-            }
-            nextMonsterCity.setMonster(monster);
-            monster.setCurrentCity(nextMonsterCity);
+            return neighborCities.get(neighborCitiesRandomIndex).getCity();
         }
+        return null;
     }
 
     void removeAllMonstersFromCitiesEnRouteToTheNextOne() {

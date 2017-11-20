@@ -1,8 +1,6 @@
 package com.github.kirikakis.monster.war;
 
-import com.github.kirikakis.monster.war.exceptions.MonsterAlreadyInCityException;
 import com.github.kirikakis.monster.war.exceptions.MonstersMoreThanCitiesException;
-import com.github.kirikakis.monster.war.exceptions.NoMonstersLeftException;
 import com.github.kirikakis.monster.war.model.City;
 import com.github.kirikakis.monster.war.model.Monster;
 import com.github.kirikakis.monster.war.model.NeighborCity;
@@ -88,8 +86,7 @@ public class MonsterWarsTest {
     }
 
     @Test
-    public void moveMonsterToNextCity()
-            throws MonsterAlreadyInCityException {
+    public void moveMonsterToNextCity() {
         when(firstMonster.getCurrentCity()).thenReturn(firstCity);
         when(firstCity.getNeighborCities()).thenReturn(Collections.singletonList(neighborCity1));
         when(secondCity.getMonster()).thenReturn(null);
@@ -97,22 +94,19 @@ public class MonsterWarsTest {
 
         MonsterWars monsterWars = new MonsterWars(citiesMap, Collections.singleton(firstMonster));
 
-        monsterWars.moveMonsterToNextCityRandomly(firstMonster);
+        City nextMonsterCity = monsterWars.chooseNextRandomCity(firstMonster);
 
-        verify(firstMonster, times(1)).setCurrentCity(secondCity);
+        assertEquals(secondCity, nextMonsterCity);
     }
 
-    @Test(expected = MonsterAlreadyInCityException.class)
-    public void moveMonsterToNextCityThrowsMonsterAlreadyInCityException()
-            throws MonsterAlreadyInCityException {
+    @Test
+    public void moveMonsterToNextCityThrowsMonsterAlreadyInCityException() {
         when(firstMonster.getCurrentCity()).thenReturn(firstCity);
-        when(firstCity.getNeighborCities()).thenReturn(Collections.singletonList(neighborCity1));
-        when(secondCity.getMonster()).thenReturn(firstMonster);
-        when(neighborCity1.getCity()).thenReturn(secondCity);
+        when(firstCity.getNeighborCities()).thenReturn(Collections.emptyList());
 
         MonsterWars monsterWars = new MonsterWars(citiesMap, Collections.singleton(firstMonster));
 
-        monsterWars.moveMonsterToNextCityRandomly(firstMonster);
+        assertEquals(null, monsterWars.chooseNextRandomCity(firstMonster));
     }
 
     @Test
@@ -167,7 +161,7 @@ public class MonsterWarsTest {
     }
 
     @Test
-    public void startTheWar() throws NoMonstersLeftException {
+    public void startTheWar() {
         when(firstMonster.getCurrentCity()).thenReturn(firstCity);
         when(firstCity.getNeighborCities()).thenReturn(Collections.singletonList(neighborCity1));
         when(neighborCity1.getCity()).thenReturn(secondCity);
@@ -193,18 +187,12 @@ public class MonsterWarsTest {
         assertEquals(2, citiesMap.size());
     }
 
-    @Test(expected = NoMonstersLeftException.class)
-    public void startTheWarThrowsNoMonstersLeftException() throws NoMonstersLeftException {
-        MonsterWars monsterWars = new MonsterWars(citiesMap, Collections.emptySet());
-        monsterWars.startTheWar(10);
-    }
-
     @Test
-    public void realWarTest() throws IOException, MonstersMoreThanCitiesException, NoMonstersLeftException {
+    public void realWarTest() throws IOException, MonstersMoreThanCitiesException {
         Map<String, City> returnedCities =
                 WarUtilities.FetchMapDataFromFile("src/main/resources/map.txt");
         Set<Monster> monsterSet =
-                WarUtilities.InitializeMonstersAndChooseThemCity(returnedCities, 400);
+                WarUtilities.InitializeMonstersAndChooseThemCity(returnedCities, 2000);
 
         MonsterWars monsterWars = new MonsterWars(returnedCities, monsterSet);
         monsterWars.startTheWar(10000);
@@ -213,6 +201,6 @@ public class MonsterWarsTest {
         Integer destroyedCities = 6763 - monsterWars.getCitiesMap().size();
 
         //For every destroyed city 2 monsters should have been killed + remaining
-        assertEquals(400, (destroyedCities * 2) + monsterWars.getMonsters().size());
+        assertEquals(2000, (destroyedCities * 2) + monsterWars.getMonsters().size());
     }
 }
